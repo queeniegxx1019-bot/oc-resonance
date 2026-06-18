@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply min-h-screen bg-forest-950 text-mist antialiased;
+    background-image: linear-gradient(180deg, #121a14 0%, #0f1410 100%);
+  }
+}
+
+@media print {
+  header,
+  footer,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  body {
+    @apply bg-white text-black;
+  }
+
+  #share-card,
+  #share-poster {
+    max-height: none !important;
+    page-break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+}
