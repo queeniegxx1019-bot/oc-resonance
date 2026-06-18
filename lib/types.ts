@@ -27,6 +27,8 @@ export interface ResonanceMatch {
   label: BilingualText;
   name: BilingualText;
   tagline: BilingualText;
+  imageUrl: string;
+  matchReason: BilingualText;
   shortPoem: BilingualText;
   deepAnalysis: BilingualText;
   resonanceStory: BilingualText;

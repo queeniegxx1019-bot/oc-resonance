@@ -76,6 +76,7 @@ export const translations = {
     plantResonance: "植物共鸣",
     animalResonance: "动物共鸣",
     keywordsTitle: "共鸣关键词",
+    matchReasonTitle: "为何是TA",
 
     unlockTitle: "解锁完整共鸣报告",
     unlockCta: "查看完整版分析",
@@ -232,6 +233,7 @@ export const translations = {
     plantResonance: "Plant Resonance",
     animalResonance: "Animal Resonance",
     keywordsTitle: "Resonance Keywords",
+    matchReasonTitle: "Why This Match",
 
     unlockTitle: "Unlock Full Resonance Report",
     unlockCta: "View Full Analysis",

@@ -1,20 +1,62 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { unlockPremium } from "@/lib/premium";
 import { STORAGE_KEY, type ResonanceReport } from "@/lib/types";
 import { useLanguage } from "./LanguageProvider";
 import Button from "./Button";
 
-function QrPlaceholder({ label }: { label: string }) {
+const WECHAT_QR = "/payments/wechat-qr.png";
+const ALIPAY_QR = "/payments/alipay-qr.png";
+
+const PAYMENT_POSTERS = {
+  wechat: { src: WECHAT_QR, width: 828, height: 1124 },
+  alipay: { src: ALIPAY_QR, width: 1708, height: 2560 },
+} as const;
+
+function PaymentPoster({
+  src,
+  width,
+  height,
+  alt,
+  label,
+  placeholder,
+}: {
+  src: string;
+  width: number;
+  height: number;
+  alt: string;
+  label: string;
+  placeholder: string;
+}) {
+  const [failed, setFailed] = useState(false);
+
   return (
     <div className="flex flex-col items-center">
-      <div className="flex h-40 w-40 items-center justify-center rounded-2xl border-2 border-dashed border-sage-500/30 bg-black/25">
-        <span className="whitespace-pre-line px-4 text-center text-xs text-sage-muted">
-          {label}
-        </span>
+      <div className="w-full max-w-[260px] overflow-hidden rounded-2xl border border-white/15 bg-white shadow-lg">
+        {failed ? (
+          <div className="flex aspect-[3/4] items-center justify-center px-4">
+            <span className="whitespace-pre-line text-center text-xs text-sage-muted">
+              {placeholder}
+            </span>
+          </div>
+        ) : (
+          <Image
+            src={src}
+            alt={alt}
+            width={width}
+            height={height}
+            className="h-auto w-full"
+            sizes="(max-width: 640px) 260px, 220px"
+            unoptimized
+            onError={() => setFailed(true)}
+          />
+        )}
       </div>
+      <p className="mt-3 text-sm font-medium text-sage-300">{label}</p>
     </div>
   );
 }
@@ -57,15 +99,19 @@ export default function PremiumUnlockView() {
           {t("premiumPageDesc")}
         </p>
 
-        <div className="mt-8 grid gap-8 sm:grid-cols-2">
-          <div className="space-y-3 text-center">
-            <QrPlaceholder label={t("wechatQrPlaceholder")} />
-            <p className="text-sm font-medium text-sage-300">{t("wechatPay")}</p>
-          </div>
-          <div className="space-y-3 text-center">
-            <QrPlaceholder label={t("alipayQrPlaceholder")} />
-            <p className="text-sm font-medium text-sage-300">{t("alipayPay")}</p>
-          </div>
+        <div className="mt-8 grid grid-cols-1 justify-items-center gap-8 sm:grid-cols-2">
+          <PaymentPoster
+            {...PAYMENT_POSTERS.wechat}
+            alt={t("wechatPay")}
+            label={t("wechatPay")}
+            placeholder={t("wechatQrPlaceholder")}
+          />
+          <PaymentPoster
+            {...PAYMENT_POSTERS.alipay}
+            alt={t("alipayPay")}
+            label={t("alipayPay")}
+            placeholder={t("alipayQrPlaceholder")}
+          />
         </div>
 
         <p className="mt-8 text-center text-xs text-sage-muted/70">{t("premiumPayNote")}</p>
@@ -78,7 +124,7 @@ export default function PremiumUnlockView() {
             href="/report"
             className="text-sm text-sage-muted transition hover:text-sage-300"
           >
-            {t("premiumBackToReport")}
+            {t("premiumBackToReport")}{" "}
           </Link>
         </div>
       </article>

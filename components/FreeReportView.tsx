@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { pickText, RESONANCE_ORDER, STORAGE_KEY, type ResonanceReport } from "@/lib/types";
@@ -10,6 +11,32 @@ function PoemBlock({ text }: { text: string }) {
   return (
     <div className="whitespace-pre-line text-base leading-loose text-mist/95 md:text-lg">
       {text}
+    </div>
+  );
+}
+
+function MatchImage({ src, alt }: { src: string; alt: string }) {
+  const [failed, setFailed] = useState(false);
+
+  if (!src || failed) {
+    return (
+      <div className="flex h-48 w-full items-center justify-center rounded-xl border border-white/10 bg-forest-900/50 text-5xl md:h-56">
+        🌿
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative h-48 w-full overflow-hidden rounded-xl border border-white/10 md:h-56">
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        className="object-cover"
+        sizes="(max-width: 768px) 100vw, 640px"
+        onError={() => setFailed(true)}
+      />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-forest-900/40 to-transparent" />
     </div>
   );
 }
@@ -79,9 +106,34 @@ export default function FreeReportView() {
               <span className="text-xl">{item.icon}</span>
               {pickText(item.label, locale)}
             </p>
-            <h2 className="mt-2 font-display text-3xl font-semibold text-sage-300 md:text-4xl">
+
+            {item.imageUrl ? (
+              <div className="mt-4">
+                <MatchImage
+                  src={item.imageUrl}
+                  alt={pickText(item.name, locale)}
+                />
+              </div>
+            ) : null}
+
+            <h2 className="mt-4 font-display text-3xl font-semibold text-sage-300 md:text-4xl">
               {pickText(item.name, locale)}
             </h2>
+            <p className="mt-2 text-sm italic text-sage-muted">
+              {pickText(item.tagline, locale)}
+            </p>
+
+            {item.matchReason ? (
+              <div className="mt-5 rounded-xl border border-white/5 bg-black/15 p-5">
+                <p className="text-xs font-semibold uppercase tracking-wider text-sage-500">
+                  {t("matchReasonTitle")}
+                </p>
+                <p className="mt-3 text-sm leading-relaxed text-mist/90 md:text-base">
+                  {pickText(item.matchReason, locale)}
+                </p>
+              </div>
+            ) : null}
+
             <div className="mt-5">
               <PoemBlock text={pickText(item.shortPoem, locale)} />
             </div>

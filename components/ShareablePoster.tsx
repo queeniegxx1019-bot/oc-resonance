@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import { useState } from "react";
 import { bt } from "@/lib/i18n/translations";
 import { pickText, type ResonanceReport } from "@/lib/types";
 import { useLanguage } from "./LanguageProvider";
@@ -10,14 +12,37 @@ interface ShareablePosterProps {
   id?: string;
 }
 
-function IllustrationBlock({ emoji, label }: { emoji: string; label: string }) {
+function IllustrationBlock({
+  imageUrl,
+  emoji,
+  label,
+}: {
+  imageUrl?: string;
+  emoji: string;
+  label: string;
+}) {
+  const [failed, setFailed] = useState(false);
+
   return (
     <div className="flex flex-col items-center">
-      <div className="relative flex h-28 w-28 items-center justify-center rounded-full border border-white/10 bg-gradient-to-br from-sage-300/15 to-blossom-400/10 shadow-glow">
-        <span className="text-5xl">{emoji}</span>
+      <div className="relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-gradient-to-br from-sage-300/15 to-blossom-400/10 shadow-glow">
+        {imageUrl && !failed ? (
+          <Image
+            src={imageUrl}
+            alt={label}
+            fill
+            className="object-cover"
+            sizes="112px"
+            onError={() => setFailed(true)}
+          />
+        ) : (
+          <span className="text-5xl">{emoji}</span>
+        )}
         <div className="absolute -inset-2 rounded-full bg-sage-300/5 blur-xl" />
       </div>
-      <p className="mt-2 text-[10px] uppercase tracking-wider text-sage-muted">{label}</p>
+      <p className="mt-2 max-w-[8rem] text-center text-[10px] uppercase tracking-wider text-sage-muted">
+        {label}
+      </p>
     </div>
   );
 }
@@ -40,7 +65,6 @@ export default function ShareablePoster({ report, premium = false, id }: Shareab
       <div className="absolute -bottom-12 -left-8 h-44 w-44 rounded-full bg-sage-300/10 blur-3xl" />
 
       <div className="relative flex h-full flex-col px-6 py-8">
-        {/* Top: OC Name */}
         <header className="text-center">
           <p className="text-[10px] uppercase tracking-[0.28em] text-sage-500">OC Resonance</p>
           {premium && (
@@ -53,13 +77,19 @@ export default function ShareablePoster({ report, premium = false, id }: Shareab
           </h2>
         </header>
 
-        {/* Center: Large illustrations */}
         <div className="my-5 flex flex-1 items-center justify-center gap-6">
-          <IllustrationBlock emoji="🌿" label={pickText(report.plant.name, locale)} />
-          <IllustrationBlock emoji="🐾" label={pickText(report.animal.name, locale)} />
+          <IllustrationBlock
+            imageUrl={report.plant.imageUrl}
+            emoji="🌿"
+            label={pickText(report.plant.name, locale)}
+          />
+          <IllustrationBlock
+            imageUrl={report.animal.imageUrl}
+            emoji="🐾"
+            label={pickText(report.animal.name, locale)}
+          />
         </div>
 
-        {/* Middle: Resonance names */}
         <div className="space-y-3 rounded-2xl border border-white/10 bg-black/20 p-4 text-center">
           <div>
             <p className="text-xs text-sage-400">🌿 {t("plantResonance")}</p>
@@ -76,7 +106,6 @@ export default function ShareablePoster({ report, premium = false, id }: Shareab
           </div>
         </div>
 
-        {/* Bottom: Keywords */}
         <div className="mt-4 text-center">
           <div className="flex flex-wrap justify-center gap-2">
             {report.keywords.map((kw) => (
@@ -90,7 +119,6 @@ export default function ShareablePoster({ report, premium = false, id }: Shareab
           </div>
         </div>
 
-        {/* Footer */}
         <footer className="mt-auto pt-5 text-center">
           <p className="text-[10px] font-medium tracking-wider text-sage-400">OC Resonance</p>
           <p className="mt-0.5 text-[9px] text-sage-muted/60">{t("posterFooter")}</p>
